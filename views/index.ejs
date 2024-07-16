@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src'self';
+    script-src'self'
+    https://aframe.io;
+    style-src 'self'
+    'unsafe-inline';"
+    />
+    <title>Integrate Paypal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-inline-size: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #555;
+        }
+        .img {
+            inline-size: 200px;
+            block-size: 200px;
+            display: block;
+            margin: 0 auto;
+            margin-block-start: 10px;
+        }
+        .buy-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-block-start: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .buy-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://www.paypal.com 'nonce-12345';">
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD" nonce="12345"></script>
+    <script nonce="12345">
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '100.00'  // Replace with the actual amount
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name);
+                    window.location.href = '/complete-order?token=' + data.orderID;
+                });
+            }
+        }).render('body'); // Display payment options on your web page
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>SHOES</h1>
+        <h2>Price: $100.00</h2>
+        <img src="https://images.pexels.com/photos/19090/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=600" alt="Shoes image" class="img">
+        <h2>
+            blue lace up sneakers
+        </h2>
+        <form action="/pay" method="post">
+            <button class="buy-button" type="submit">Buy Now</button>
+        </form>
+    </div>
+</body>
+</html>
+
